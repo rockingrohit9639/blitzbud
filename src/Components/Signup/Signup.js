@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { Link } from "react-router-dom";
+import server from "../../axios/instance";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -53,8 +54,19 @@ function Signup()
         })
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        try {
+            const res = await server.post("/register", formData);
+
+            console.log(res);
+            
+        }
+
+        catch (err) {
+            console.log(err);
+        }
         console.log(formData)
     }
 
@@ -77,6 +89,7 @@ function Signup()
                         name="fname"
                         label="Full Name"
                         type="text"
+                        autoFocus
                         id="fname"
                         value={formData.fname}
                         onChange={handleChange}
@@ -116,7 +129,6 @@ function Signup()
                         id="email"
                         label="Email Address"
                         name="email"
-                        autoFocus
                         value={formData.email}
                         onChange={handleChange}
                     />

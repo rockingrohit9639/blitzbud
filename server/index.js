@@ -22,6 +22,9 @@ app.get("/", (req, res) => {
     return res.send("THis is fine")
 })
 
+// adding auth routes
+app.use(require("./routes/authRoutes"));
+
 // Listening to the server
 app.listen(PORT, () =>
 {
