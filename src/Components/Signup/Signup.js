@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -9,6 +9,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { Link } from "react-router-dom";
 import server from "../../axios/instance";
+import { useHistory } from "react-router-dom";
+import { useDataLayerValues } from '../../datalayer';
+import { actions } from '../../reducer';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -32,7 +35,9 @@ const useStyles = makeStyles((theme) => ({
 
 function Signup()
 {
+    const history = useHistory();
     const classes = useStyles();
+    const [{ isAuthenticated }, dispatch] = useDataLayerValues();
     const [formData, setFormData] = useState({
         fname: "",
         uname: "",
@@ -40,6 +45,12 @@ function Signup()
         email: "",
         password: "",
     });
+
+    useEffect(() =>
+    {
+        console.log(isAuthenticated);
+        isAuthenticated && history.push("/dashboard");
+    }, [isAuthenticated, history]);
 
     const handleChange = (e) =>
     {
@@ -54,20 +65,53 @@ function Signup()
         })
     }
 
-    const handleSubmit = async (e) => {
+    const clearData = () =>
+    {
+        setFormData({
+            fname: "",
+            uname: "",
+            contactno: "",
+            email: "",
+            password: "",
+        })
+    }
+
+    const handleSubmit = async (e) =>
+    {
         e.preventDefault();
 
-        try {
+        try
+        {
             const res = await server.post("/register", formData);
 
-            console.log(res);
-            
-        }
+            if (res.status === 200)
+            {
+                localStorage.setItem('@token', res.data.token);
+                const user = await res.data.user;
+                const userData = {
+                    fname: user.fname,
+                    uname: user.uname,
+                    contactno: user.contactno,
+                    email: user.email,
+                    role: user.role
+                }
 
-        catch (err) {
-            console.log(err);
+                dispatch({
+                    type: actions.SET_AUTH,
+                    auth: true
+                })
+
+                dispatch({
+                    type: actions.SET_USER,
+                    user: userData,
+                });
+            }
         }
-        console.log(formData)
+        catch (err)
+        {
+            window.alert(err.response.data.error);
+        }
+        clearData();
     }
 
     return (
