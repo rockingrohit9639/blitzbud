@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -11,27 +11,53 @@ import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
-      marginTop: theme.spacing(8),
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
+        marginTop: theme.spacing(8),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
     },
     avatar: {
-      margin: theme.spacing(1),
-      backgroundColor: theme.palette.secondary.main,
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.secondary.main,
     },
     form: {
-      width: '100%', // Fix IE 11 issue.
-      marginTop: theme.spacing(1),
+        width: '100%',
+        marginTop: theme.spacing(1),
     },
     submit: {
-      margin: theme.spacing(3, 0, 2),
+        margin: theme.spacing(3, 0, 2),
     },
-  }));
+}));
 
-  function Signup()
+function Signup()
 {
     const classes = useStyles();
+    const [formData, setFormData] = useState({
+        fname: "",
+        uname: "",
+        contactno: "",
+        email: "",
+        password: "",
+    });
+
+    const handleChange = (e) =>
+    {
+        const { name, value } = e.target;
+
+        setFormData(prevData =>
+        {
+            return {
+                ...prevData,
+                [name]: value,
+            }
+        })
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log(formData)
+    }
+
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -42,7 +68,46 @@ const useStyles = makeStyles((theme) => ({
                 <Typography component="h1" variant="h5">
                     Sign up
                 </Typography>
-                <form className={classes.form}>
+                <form className={classes.form} onSubmit={handleSubmit}>
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="fname"
+                        label="Full Name"
+                        type="text"
+                        id="fname"
+                        value={formData.fname}
+                        onChange={handleChange}
+                    />
+
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="uname"
+                        label="Username"
+                        type="text"
+                        id="uname"
+                        value={formData.uname}
+                        onChange={handleChange}
+                    />
+
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="contactno"
+                        label="Contact Number"
+                        type="mobile"
+                        id="contactno"
+                        value={formData.contactno}
+                        onChange={handleChange}
+                    />
+
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -52,6 +117,8 @@ const useStyles = makeStyles((theme) => ({
                         label="Email Address"
                         name="email"
                         autoFocus
+                        value={formData.email}
+                        onChange={handleChange}
                     />
                     <TextField
                         variant="outlined"
@@ -62,7 +129,10 @@ const useStyles = makeStyles((theme) => ({
                         label="Password"
                         type="password"
                         id="password"
+                        value={formData.password}
+                        onChange={handleChange}
                     />
+
                     <Button
                         type="submit"
                         fullWidth
