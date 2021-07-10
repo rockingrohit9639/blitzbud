@@ -101,7 +101,6 @@ exports.getManagers = async (req, res) =>
 
     try
     {
-
         const managers = await User.find({ role: "MANAGER" });
         return res.status(200).json(managers)
     }

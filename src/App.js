@@ -22,13 +22,14 @@ function App()
     
     try {
       const res = await server.post("/authenticate");
+      console.log(res)
       const user = await res.data;
             const userData = {
-                fname: user.fname,
-                uname: user.uname,
-                contactno: user.contactno,
-                email: user.email,
-                role: user.role
+                fname: user?.fname,
+                uname: user?.uname,
+                contactno: user?.contactno,
+                email: user?.email,
+                role: user?.role
             }
 
             dispatch({

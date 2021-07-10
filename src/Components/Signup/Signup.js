@@ -86,6 +86,7 @@ function Signup()
             if (res.status === 200)
             {
                 localStorage.setItem('@token', res.data.token);
+                
                 dispatch({
                     type: actions.SET_AUTH,
                     auth: true
