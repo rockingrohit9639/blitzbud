@@ -48,8 +48,7 @@ function Signup()
 
     useEffect(() =>
     {
-        console.log(isAuthenticated);
-        isAuthenticated && history.push("/dashboard");
+        isAuthenticated && history.push("/profile");
     }, [isAuthenticated, history]);
 
     const handleChange = (e) =>
@@ -87,24 +86,11 @@ function Signup()
             if (res.status === 200)
             {
                 localStorage.setItem('@token', res.data.token);
-                const user = await res.data.user;
-                const userData = {
-                    fname: user.fname,
-                    uname: user.uname,
-                    contactno: user.contactno,
-                    email: user.email,
-                    role: user.role
-                }
-
                 dispatch({
                     type: actions.SET_AUTH,
                     auth: true
                 })
 
-                dispatch({
-                    type: actions.SET_USER,
-                    user: userData,
-                });
             }
         }
         catch (err)

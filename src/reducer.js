@@ -7,11 +7,13 @@ export const initialState = {
         email: "",
         role: "",
     },
+    role: "",
 }
 
 export const actions = {
     SET_AUTH: "SET_AUTH",
     SET_USER: "SET_USER",
+    SET_ROLE: "SET_ROLE",
 }
 
 const reducer = (state, action) =>
@@ -30,6 +32,12 @@ const reducer = (state, action) =>
                 ...state,
                 user: action.user
             };
+
+        case actions.SET_ROLE:
+            return {
+                ...state,
+                role: action.role,
+            }
 
         default:
             return state;

@@ -3,9 +3,10 @@ const jwt = require("jsonwebtoken");
 exports.authenticate = (req, res, next) =>
 {
     const authHeader = req.headers.authorization;
-
+    
     if (authHeader)
     {
+        const token = authHeader.replace("Bearer ", "");
         jwt.verify(token, process.env.SECRET_TOKEN, (err, user) =>
         {
             if (err)
@@ -13,7 +14,7 @@ exports.authenticate = (req, res, next) =>
                 return res.status(401).json({ error: "Invalid Token" });
             }
 
-            req.userid = user.id;
+            req.userId = user.id;
             next();
         })
     }

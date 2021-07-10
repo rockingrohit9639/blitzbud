@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import server from "../../axios/instance";
 import { useDataLayerValues } from '../../datalayer';
 import { actions } from '../../reducer';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 function Signin()
 {
     const classes = useStyles();
-    const [{ isAuthenticated }, dispatch] = useDataLayerValues();
+    const [{ isAuthenticated, role }, dispatch] = useDataLayerValues();
     const history = useHistory();
     const [formData, setFormData] = useState({
         email: "",
@@ -46,9 +46,18 @@ function Signin()
 
     useEffect(() =>
     {
-        console.log(isAuthenticated);
-        isAuthenticated && history.push("/dashboard");
-    }, [isAuthenticated, history])
+        if (isAuthenticated)
+        {
+            if (role === "ADMIN")
+            {
+                history.push("/dashboard");
+            }
+            else if (role === "MANAGER")
+            {
+                history.push("/profile");
+            }
+        }
+    }, [isAuthenticated, history, role])
 
     const handleChange = (e) =>
     {
@@ -78,16 +87,9 @@ function Signin()
         try
         {
             const res = await server.post("/login", formData);
+            const role = await res.data.role;
 
             localStorage.setItem('@token', res.data.token);
-            const user = await res.data.user;
-            const userData = {
-                fname: user.fname,
-                uname: user.uname,
-                contactno: user.contactno,
-                email: user.email,
-                role: user.role
-            }
 
             dispatch({
                 type: actions.SET_AUTH,
@@ -95,14 +97,18 @@ function Signin()
             })
 
             dispatch({
-                type: actions.SET_USER,
-                user: userData,
+                type: actions.SET_ROLE,
+                role: role,
             });
 
         }
         catch (err)
         {
-            window.alert(err.response.data.error);
+            console.log(err);
+            if (err.response.data.error)
+            {
+                window.alert(err?.response?.data?.error);
+            }
         }
 
         clearData();

@@ -20,12 +20,10 @@ exports.login = async (req, res) =>
 
         if (user)
         {
-            const isPasswordValid = await bcrypt.compare(password, user.password);
-
-            if (isPasswordValid)
+            if (password === user.password)
             {
                 const token = createWebToken(user._id);
-                return res.status(200).json({ token, user })
+                return res.status(200).json({ token, role: user.role });
             }
             else
             {
@@ -54,13 +52,8 @@ exports.register = async (req, res) =>
 
         const isExist = await User.findOne({ email: email });
 
-        console.log(isExist);
-
         if (!isExist)
         {
-            const salt = await bcrypt.genSalt();
-            password = await bcrypt.hash(password, salt);
-
             const newUser = User.create({
                 fname,
                 uname,
@@ -71,7 +64,7 @@ exports.register = async (req, res) =>
             })
 
             const token = createWebToken(newUser._id);
-            return res.status(200).json({ token, user: newUser });
+            return res.status(200).json({ token });
         }
         else
         {
@@ -83,5 +76,64 @@ exports.register = async (req, res) =>
     {
         console.log(err);
         return res.status(500).json({ "error": "Internal Server Error" })
+    }
+}
+
+exports.auth = async (req, res) =>
+{
+    const { userId } = req;
+
+    try
+    {
+
+        const user = await User.findOne({ _id: userId });
+        return res.status(200).json(user);
+    }
+    catch (err)
+    {
+        return res.status(500).json({ "error": "Internal Server Error" })
+    }
+
+}
+
+exports.getManagers = async (req, res) =>
+{
+
+    try
+    {
+
+        const managers = await User.find({ role: "MANAGER" });
+        return res.status(200).json(managers)
+    }
+    catch (err)
+    {
+        return res.status(500).json({ "error": "Internal Server Error" })
+    }
+
+}
+
+exports.deleteManager = async (req, res) =>
+{
+    const { id } = req.body;
+
+    if (!id)
+    {
+        return res.status(404).json({ "error": "Please provide a valid id." });
+    }
+    try
+    {
+
+        const isDeleted = await User.deleteOne({ _id: id });
+
+        if (isDeleted)
+        {
+            return res.status(200).json({ "message": "Manager Deleted Successfully." });
+        }
+
+        return res.status(404).json({ "error": "No manager found with this id." });
+    }
+    catch (err)
+    {
+        console.log(err)
     }
 }
